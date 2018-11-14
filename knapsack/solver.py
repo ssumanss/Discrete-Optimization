@@ -16,7 +16,6 @@ def solve_it(input_data):
 
     items = []
 
-    print(input_data)
 
     for i in range(1, item_count+1):
         line = lines[i]
@@ -24,70 +23,46 @@ def solve_it(input_data):
         items.append(Item(i-1, int(parts[0]), int(parts[1])))
 
 
-    print(items)
-    # a trivial greedy algorithm for filling the knapsack
-    # it takes items in-order until the knapsack is full
+    def dp_solver(item_count, capacity, items):
+        # prepare the table
+        dp_table = [ [ 0 for x in range(capacity + 1) ] for y in range (item_count + 1)]
+
+        for item in items:
+            col = item.index + 1
+            wt = item.weight
+            for x in range(1, capacity + 1):
+                if x >= wt:
+                    dp_table[col][x] = max(dp_table[col - 1][x], item.value + dp_table[col - 1][x - wt])
+                    
+                else:
+                    dp_table[col][x] = dp_table[col - 1][x]
 
 
+        # preparing solution
+        value = dp_table[-1][-1]
+        status = 1
+        
+        taken = []
+        row = capacity
+        item_rev = sorted(items, key=lambda x: x.index, reverse = True)
+        # print(item_rev)
+        for item in item_rev:
+            if dp_table[item.index + 1][row] == dp_table[item.index][row] or dp_table[item.index + 1][row] == 0:
+                taken.append(0)
+            
 
-    # prepare the table
-    dp_table = [ [ 0 for x in range(capacity + 1) ] for y in range (item_count + 1)]
-
-    for item in items:
-        col = item.index + 1
-        wt = item.weight
-        for x in range(1, capacity + 1):
-            if x >= wt:
-                dp_table[col][x] = max(dp_table[col - 1][x], item.value + dp_table[col - 1][x - wt])
-                
             else:
-                dp_table[col][x] = dp_table[col - 1][x]
-
+                taken.append(1)
+                row = row - item.weight
 
             
-    print("dptable")
-    for row in dp_table:
-        print(' '.join(map(str,row)))
+        taken.reverse()   
+        return (value, status, taken)
 
 
-
-    # preparing solution
-    value = dp_table[-1][-1]
-    weight = 0
-    
-    taken = []
-    row = capacity
-    item_rev = sorted(items, key=lambda x: x.index, reverse = True)
-    # print(item_rev)
-    for item in item_rev:
-        print(row, item.index, dp_table[item.index + 1][row])
-        if dp_table[item.index + 1][row] == dp_table[item.index][row] or dp_table[item.index + 1][row] == 0:
-            print(row, item.index)
-            taken.append(0)
-        
-
-        else:
-            taken.append(1)
-            row = row - item.weight
-
-        
-    taken.reverse()
-    print(taken)
-
-    obj = 0
-    for item in items:
-        obj += item.value * taken[item.index]
-
-    if abs(obj - value) < 0.1:
-        print("program is working fine")
-
-    else:
-        print("somthing is wrong, ", obj)    
-
-
-    
+    value, status, taken = dp_solver(item_count, capacity, items)
     # prepare the solution in the specified output format
-    output_data = str(value) + ' ' + str(1) + '\n'
+    output_data = str(value) + ' ' + str(status) + '\n'
     output_data += ' '.join(map(str, taken))
     return output_data
 
