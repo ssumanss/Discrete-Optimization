@@ -22,6 +22,28 @@ def solve_it(input_data):
         parts = line.split()
         items.append(Item(i-1, int(parts[0]), int(parts[1])))
 
+    def greedy_solver(item_count, capacity, items):
+        status = 0
+        dic = {}
+        for item in items:
+            dic[item.value/item.weight] = item
+
+
+        val = 0
+        taken = [0] * item_count
+        for key in sorted(dic.items(), key=lambda x: x[0]):
+            # print(key)
+            if key[0] + val <= capacity:
+                item = key[1]
+                taken[item.index] = 1
+                val += item.value
+
+        return(val, status, taken)        
+
+            
+
+
+
 
     def dp_solver(item_count, capacity, items):
         # prepare the table
@@ -59,8 +81,11 @@ def solve_it(input_data):
         taken.reverse()   
         return (value, status, taken)
 
-
-    value, status, taken = dp_solver(item_count, capacity, items)
+    # using appropriate solver    
+    if item_count <= 250:
+        value, status, taken = dp_solver(item_count, capacity, items)
+    else:
+        value, status, taken = greedy_solver(item_count, capacity, items)
     # prepare the solution in the specified output format
     output_data = str(value) + ' ' + str(status) + '\n'
     output_data += ' '.join(map(str, taken))
