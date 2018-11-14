@@ -33,8 +33,8 @@ def solve_it(input_data):
         taken = [0] * item_count
         for key in sorted(dic.items(), key=lambda x: x[0]):
             # print(key)
-            if key[0] + val <= capacity:
-                item = key[1]
+            item = key[1]
+            if item.weight + val <= capacity:
                 taken[item.index] = 1
                 val += item.value
 
