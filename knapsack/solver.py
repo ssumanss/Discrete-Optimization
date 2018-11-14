@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from collections import namedtuple
-Item = namedtuple("Item", ['index', 'value', 'weight', 'density'])
+Item = namedtuple("Item", ['index', 'value', 'weight'])
 
 def solve_it(input_data):
     # Modify this code to run your optimization algorithm
@@ -21,27 +21,73 @@ def solve_it(input_data):
     for i in range(1, item_count+1):
         line = lines[i]
         parts = line.split()
-        items.append(Item(i-1, int(parts[0]), int(parts[1]), int(parts[0])/int(parts[1])))
+        items.append(Item(i-1, int(parts[0]), int(parts[1])))
 
 
-    items = sorted(items, key=lambda x: x.density, reverse=True)
     print(items)
     # a trivial greedy algorithm for filling the knapsack
     # it takes items in-order until the knapsack is full
-    value = 0
-    weight = 0
-    taken = [0]*len(items)
 
 
+
+    # prepare the table
+    dp_table = [ [ 0 for x in range(capacity + 1) ] for y in range (item_count + 1)]
 
     for item in items:
-        if weight + item.weight <= capacity:
-            taken[item.index] = 1
-            value += item.value
-            weight += item.weight
+        col = item.index + 1
+        wt = item.weight
+        for x in range(1, capacity + 1):
+            if x >= wt:
+                dp_table[col][x] = max(dp_table[col - 1][x], item.value + dp_table[col - 1][x - wt])
+                
+            else:
+                dp_table[col][x] = dp_table[col - 1][x]
+
+
+            
+    print("dptable")
+    for row in dp_table:
+        print(' '.join(map(str,row)))
+
+
+
+    # preparing solution
+    value = dp_table[-1][-1]
+    weight = 0
+    
+    taken = []
+    row = capacity
+    item_rev = sorted(items, key=lambda x: x.index, reverse = True)
+    # print(item_rev)
+    for item in item_rev:
+        print(row, item.index, dp_table[item.index + 1][row])
+        if dp_table[item.index + 1][row] == dp_table[item.index][row] or dp_table[item.index + 1][row] == 0:
+            print(row, item.index)
+            taken.append(0)
+        
+
+        else:
+            taken.append(1)
+            row = row - item.weight
+
+        
+    taken.reverse()
+    print(taken)
+
+    obj = 0
+    for item in items:
+        obj += item.value * taken[item.index]
+
+    if abs(obj - value) < 0.1:
+        print("program is working fine")
+
+    else:
+        print("somthing is wrong, ", obj)    
+
+
     
     # prepare the solution in the specified output format
-    output_data = str(value) + ' ' + str(0) + '\n'
+    output_data = str(value) + ' ' + str(1) + '\n'
     output_data += ' '.join(map(str, taken))
     return output_data
 
