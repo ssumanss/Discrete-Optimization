@@ -6,6 +6,7 @@ Item = namedtuple("Item", ['index', 'value', 'weight'])
 
 def solve_it(input_data):
     # Modify this code to run your optimization algorithm
+    # print(input_data)
 
     # parse the input
     lines = input_data.split('\n')
@@ -30,11 +31,12 @@ def solve_it(input_data):
 
 
         val = 0
+        weight = 0
         taken = [0] * item_count
         for key in sorted(dic.items(), key=lambda x: x[0]):
             # print(key)
             item = key[1]
-            if item.weight + val <= capacity:
+            if item.weight + weight <= capacity:
                 taken[item.index] = 1
                 val += item.value
 
@@ -86,6 +88,7 @@ def solve_it(input_data):
         value, status, taken = dp_solver(item_count, capacity, items)
     else:
         value, status, taken = greedy_solver(item_count, capacity, items)
+
     # prepare the solution in the specified output format
     output_data = str(value) + ' ' + str(status) + '\n'
     output_data += ' '.join(map(str, taken))
