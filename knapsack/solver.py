@@ -6,7 +6,7 @@ Item = namedtuple("Item", ['index', 'value', 'weight'])
 
 def solve_it(input_data):
     # Modify this code to run your optimization algorithm
-    # print(input_data)
+    print(input_data)
 
     # parse the input
     lines = input_data.split('\n')
@@ -23,30 +23,31 @@ def solve_it(input_data):
         parts = line.split()
         items.append(Item(i-1, int(parts[0]), int(parts[1])))
 
+    # Simple Greedy solver based on density
     def greedy_solver(item_count, capacity, items):
         status = 0
-        dic = {}
+        I = namedtuple("I", ['index', 'value', 'weight', 'density'])
+        lis = []
         for item in items:
-            dic[item.value/item.weight] = item
+            lis.append(I(item.index, item.value, item.weight, item.value/item.weight))
 
+        # sortng using lambda according to density
+        lis = sorted(lis, key=lambda x: x.density, reverse=True)
 
         val = 0
         weight = 0
         taken = [0] * item_count
-        for key in sorted(dic.items(), key=lambda x: x[0]):
-            # print(key)
-            item = key[1]
-            if item.weight + weight <= capacity:
+        for item in lis:
+            if weight + item.weight <= capacity:
+                weight += item.weight
                 taken[item.index] = 1
                 val += item.value
+        
 
         return(val, status, taken)        
 
             
-
-
-
-
+    # Defining DP solver
     def dp_solver(item_count, capacity, items):
         # prepare the table
         dp_table = [ [ 0 for x in range(capacity + 1) ] for y in range (item_count + 1)]
@@ -69,7 +70,7 @@ def solve_it(input_data):
         taken = []
         row = capacity
         item_rev = sorted(items, key=lambda x: x.index, reverse = True)
-        # print(item_rev)
+        
         for item in item_rev:
             if dp_table[item.index + 1][row] == dp_table[item.index][row] or dp_table[item.index + 1][row] == 0:
                 taken.append(0)
