@@ -46,7 +46,7 @@ def solve_it(input_data):
 
                     # print(dic)
                 
-            edges = edges
+            # edges = edges
             
         # print(key, val)
     # print(node_count, edge_count)    
@@ -57,7 +57,7 @@ def solve_it(input_data):
     # solution = range(0, node_count)
 
     # prepare the solution in the specified output format
-    output_data = str(max(solution)) + ' ' + str(0) + '\n'
+    output_data = str(max(solution)+1) + ' ' + str(0) + '\n'
     output_data += ' '.join(map(str, solution))
 
     return output_data
