@@ -19,11 +19,45 @@ def solve_it(input_data):
         edges.append((int(parts[0]), int(parts[1])))
 
     # build a trivial solution
+    # color =        # set all possible color to each node
+    solution = []
+    dic = {k:list(range(0, edge_count))  for k in range(node_count)} # start with each node having 4 color
+    for node, colors in dic.items():           # iterating over each node
+        if len(colors) > 1:                    # if first node has more possible colors                                
+            c = colors[0] 
+            dic[node] = c                      # set node to first color
+            solution.append(c)
+            # print(dic)
+            for edge in edges[:]:
+                if node in edge:
+                    other_node = None
+                    if node == edge[0]:
+                        other_node = edge[1]
+                    else:
+                        other_node = edge[0]
+
+                    edges.remove(edge)
+
+                    # print(edges)
+                    # print(other_node)        # printing other node
+                    if node < other_node and dic[node] in dic[other_node]:
+                        # print(dic[other_node], colors[0])
+                        dic[other_node].remove(colors[0])
+
+                    # print(dic)
+                
+            edges = edges
+            
+        # print(key, val)
+    # print(node_count, edge_count)    
+    # print(edges)
+    # print(dic)                     # solution stored in dictionary
+    # print(solution)
     # every node has its own color
-    solution = range(0, node_count)
+    # solution = range(0, node_count)
 
     # prepare the solution in the specified output format
-    output_data = str(node_count) + ' ' + str(0) + '\n'
+    output_data = str(max(solution)) + ' ' + str(0) + '\n'
     output_data += ' '.join(map(str, solution))
 
     return output_data
